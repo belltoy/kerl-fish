@@ -1,3 +1,4 @@
+#! /bin/fish
 
 # set CMDNAME (basename (status --current-filename))
 set ERLANG_DOWNLOAD_URL "http://www.erlang.org/download"
@@ -648,7 +649,7 @@ function kerl_download
     end
     kerl_ensure_checksum_file
     echo "Verifying archive checksum..."
-    set -l SUM ($MD5SUM "$KERL_DOWNLOAD_DIR/$argv[1]" | cut -d " " -f $MD5SUM_FIELD)
+    set -l SUM (eval $MD5SUM "$KERL_DOWNLOAD_DIR/$argv[1]" | cut -d " " -f $MD5SUM_FIELD)
     set -l ORIG_SUM (grep -F "$argv[1]" "$KERL_DOWNLOAD_DIR/MD5" | cut -d " " -f 2)
     if test "$SUM" != "$ORIG_SUM"
         echo "Checksum error, check the files in $KERL_DOWNLOAD_DIR"
@@ -829,3 +830,5 @@ function kerl
             echo "unknown command: $argv[1]"; kerl_usage; return 1
     end
 end
+
+kerl $argv
