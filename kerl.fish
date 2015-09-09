@@ -384,7 +384,7 @@ function kerl_do_build
 end
 
 function kerl_do_install
-    set -l rel (kerl_get_release_from_name $argv[1])
+    set -l rel (eval kerl_get_release_from_name $argv[1])
     if test $status -ne 0
         echo "No build named $argv[1]"
         return 1
@@ -407,56 +407,53 @@ function kerl_do_install
     printf "\
 # credits to virtualenv
 function kerl_deactivate
-{
-    if [ -n "\$_KERL_PATH_REMOVABLE" ]; then
-        PATH=\${PATH//\${_KERL_PATH_REMOVABLE}:/}
-        export PATH
-        unset _KERL_PATH_REMOVABLE
-    fi
-    if [ -n "\$_KERL_MANPATH_REMOVABLE" ]; then
-        MANPATH=\${MANPATH//\${_KERL_MANPATH_REMOVABLE}:/}
-        export MANPATH
-        unset _KERL_MANPATH_REMOVABLE
-    fi
-    if [ -n "\$_KERL_SAVED_REBAR_PLT_DIR" ]; then
-        REBAR_PLT_DIR="\$_KERL_SAVED_REBAR_PLT_DIR"
-        export REBAR_PLT_DIR
-        unset _KERL_SAVED_REBAR_PLT_DIR
-    fi
-    if [ -n "\$_KERL_ACTIVE_DIR" ]; then
-        unset _KERL_ACTIVE_DIR
-    fi
-    if [ -n "\$_KERL_SAVED_PS1" ]; then
-        PS1="\$_KERL_SAVED_PS1"
-        export PS1
-        unset _KERL_SAVED_PS1
-    fi
-    if [ -n "\$BASH" -o -n "\$ZSH_VERSION" ]; then
+    if test -n \"\$_KERL_PATH_REMOVABLE\"
+        set -l OLD_PATH (echo \$PATH | sed -e \"s;\$_KERL_PATH_REMOVABLE;;\")
+        echo -n (eval set -g -x PATH \$OLD_PATH)
+        set -e _KERL_PATH_REMOVABLE
+    end
+    if test -n \"\$_KERL_MANPATH_REMOVABLE\"
+        set -l OLD_MANPATH (echo \$MANPATH | sed -e \"s;\$_KERL_MANPATH_REMOVABLE;;\")
+        echo -n (eval set -g -x MANPATH \$OLD_MANPATH)
+        set -e _KERL_MANPATH_REMOVABLE
+    end
+    if test -n \"\$_KERL_SAVED_REBAR_PLT_DIR\"
+        set -g REBAR_PLT_DIR '\$_KERL_SAVED_REBAR_PLT_DIR'
+        set -e _KERL_SAVED_REBAR_PLT_DIR
+    end
+    if test -n \"\$_KERL_ACTIVE_DIR\"
+        set -e _KERL_ACTIVE_DIR
+    end
+    if test -n \"\$_KERL_SAVED_PS1\"
+        set -g PS1 \"\$_KERL_SAVED_PS1\"
+        set -e _KERL_SAVED_PS1
+    end
+    if test -n \"\$BASH\" -o -n \"\$ZSH_VERSION\"
         hash -r
-    fi
-    if [ ! "\$argv[1]" = "nondestructive" ]; then
-        unset -f kerl_deactivate
-    fi
-}
+    end
+    if test \"\$argv[1]\" != 'nondestructive'
+        functions -e kerl_deactivate
+    end
+end
 kerl_deactivate nondestructive
 
-set -g -x _KERL_SAVED_REBAR_PLT_DIR "\$REBAR_PLT_DIR"
-set -g -x _KERL_PATH_REMOVABLE "$absdir/bin"
-set -g -x PATH \${_KERL_PATH_REMOVABLE} \$PATH
-set -g -x _KERL_MANPATH_REMOVABLE "$absdir/man"
-set -g -x MANPATH \${_KERL_MANPATH_REMOVABLE} \$MANPATH
-set -g -x REBAR_PLT_DIR "$absdir"
-set -g -x _KERL_ACTIVE_DIR "$absdir"
-if [ -f "$KERL_CONFIG" ]
-    . "$KERL_CONFIG"
+set -g -x _KERL_SAVED_REBAR_PLT_DIR \"\$REBAR_PLT_DIR\"
+set -g -x _KERL_PATH_REMOVABLE '$absdir/bin'
+set -g -x PATH \$_KERL_PATH_REMOVABLE \$PATH
+set -g -x _KERL_MANPATH_REMOVABLE '$absdir/man'
+set -g -x MANPATH \$_KERL_MANPATH_REMOVABLE \$MANPATH
+set -g -x REBAR_PLT_DIR '$absdir'
+set -g -x _KERL_ACTIVE_DIR '$absdir'
+if test -f \"\$KERL_CONFIG\"
+    . \"\$KERL_CONFIG\"
 end
 # TODO
-if [ -n "\$KERL_ENABLE_PROMPT" ]
-    set -g -x _KERL_SAVED_PS1 "\$PS1"
-    set -g -x PS1="($argv[1])\$PS1"
+if test -n \"\$KERL_ENABLE_PROMPT\"
+    set -g -x _KERL_SAVED_PS1 \"\$PS1\"
+    set -g -x PS1 \"($argv[1])\$PS1\"
     export PS1
 end
-if [ -n "\$BASH" -o -n "\$ZSH_VERSION" ]
+if test -n \"\$BASH\" -o -n \"\$ZSH_VERSION\"
     hash -r
 end
 " > "$absdir/activate"
