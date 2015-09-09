@@ -663,18 +663,18 @@ function kerl
 
     switch "$argv[1]"
         case build
-            if test "$argv[2]" = "git"
-                if test (count $argv) -ne 5
+            if test (count $argv) = 5
+                if test "$argv[2]" != "git"
                     echo "usage: kerl $argv[1] $argv[2] <git_url> <git_version> <build_name>"
                     return 1
                 end
                 kerl_do_git_build $argv[3] $argv[4] $argv[5]
-            else
-                if test (count $argv) -lt 3
-                    echo "usage: kerl $argv[1] <release> <build_name>"
-                    return 1
-                end
+            else if test (count $argv) = 3
                 kerl_do_build $argv[2] $argv[3]
+            else
+                echo "usage: kerl $argv[1] <release> <build_name>"
+                echo "usage: kerl $argv[1] git <git_url> <git_version> <build_name>"
+                return 1
             end
         case install
             if test (count $argv) -lt 2
