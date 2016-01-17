@@ -1,4 +1,4 @@
-#! /bin/fish
+#! /usr/bin/fish
 
 # set CMDNAME (basename (status --current-filename))
 set ERLANG_DOWNLOAD_URL "http://www.erlang.org/download"
@@ -79,7 +79,7 @@ switch $KERL_SYSTEM
         set MD5SUM_FIELD 2
         set SED_OPT -E
     case '*'
-        set MD5SUM md5sun
+        set MD5SUM md5sum
         set MD5SUM_FIELD 1
         set SED_OPT -r
 end
@@ -221,7 +221,7 @@ end
 function kerl_do_git_build
     kerl_assert_build_name_unused $argv[3]
 
-    set -l GIT (echo -n "$argv[1]" | $MD5SUM | cut -d " " -f $MD5SUM_FIELD)
+    set -l GIT (echo -n "$argv[1]" | "$MD5SUM" | cut -d " " -f $MD5SUM_FIELD)
     mkdir -p "$KERL_GIT_DIR"
     cd "$KERL_GIT_DIR"
     echo "Checking Erlang/OTP git repository from $argv[1]..."
