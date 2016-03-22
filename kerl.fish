@@ -1,4 +1,4 @@
-#! /usr/bin/fish
+#! /usr/local/bin/fish
 
 # set CMDNAME (basename (status --current-filename))
 set ERLANG_DOWNLOAD_URL "http://www.erlang.org/download"
@@ -112,7 +112,7 @@ end
 # TODO
 function kerl_get_releases
     curl -L -s $ERLANG_DOWNLOAD_URL/ | \
-        sed $SED_OPT -e 's/^.*<[aA] [hH][rR][eE][fF]=\"\/download\/otp_src_([-0-9A-Za-z_.]+)\.tar\.gz\">.*$/\1/' \
+        sed $SED_OPT -e 's/^.*<[aA] [hH][rR][eE][fF]=\"\otp_src_([-0-9A-Za-z_.]+)\.tar\.gz\">.*$/\1/' \
                      -e '/^R1|^[0-9]/!d' | \
         sed -e 's/^R\(.*\)/\1:R\1/' | sed -e 's/^\([^\:]*\)$/\1-z:\1/' | sort | cut -d':' -f2
 end
