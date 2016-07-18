@@ -221,7 +221,7 @@ end
 function kerl_do_git_build
     kerl_assert_build_name_unused $argv[3]
 
-    set -l GIT (echo -n "$argv[1]" | "$MD5SUM" | cut -d " " -f $MD5SUM_FIELD)
+    set -l GIT (echo -n "$argv[1]" | eval $MD5SUM | cut -d " " -f $MD5SUM_FIELD)
     mkdir -p "$KERL_GIT_DIR"
     cd "$KERL_GIT_DIR"
     echo "Checking Erlang/OTP git repository from $argv[1]..."
