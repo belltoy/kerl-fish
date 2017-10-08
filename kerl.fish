@@ -360,7 +360,7 @@ function kerl_do_build
             end
         end
     end
-    if [ -n "$KERL_CONFIGURE_DISABLE_APPLICATIONS" ]; then
+    if test -n "$KERL_CONFIGURE_DISABLE_APPLICATIONS"
         for i in $KERL_CONFIGURE_DISABLE_APPLICATIONS
             touch -f ./lib/$i/SKIP
             if [ $status -ne 0 ]
@@ -370,7 +370,7 @@ function kerl_do_build
         end
     end
     ./otp_build boot -a $KERL_CONFIGURE_OPTIONS > "$LOGFILE" 2>&1
-    if [ $status -ne 0 ]; then
+    if test $status -ne 0
         echo "Build failed, see $LOGFILE"
         kerl_list_remove builds "$argv[1] $argv[2]"
         return 1
